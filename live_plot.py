@@ -31,9 +31,9 @@ class LivePlotWindow(QtWidgets.QMainWindow):
         layout_buttons.addStretch()
         layout.addLayout(layout_buttons)
         # Polling timer               
-        self.timer = canvas.new_timer(50) #in ms
-        self.timer.add_callback(self.polldata)
-        self.timer.start()
+        self.timer = QtCore.QTimer(self) #in ms
+        self.timer.timeout.connect(self.polldata)
+        self.timer.start(50)
         # Timer button
         pause.clicked.connect(self.timer.stop)
         resume.clicked.connect(self.timer.start)        
@@ -45,5 +45,6 @@ class LivePlotWindow(QtWidgets.QMainWindow):
     def closeEvent(self, event):
         print("Terminating QM job.")
         self.job.halt()
+        self.timer.timeout.disconnect(self.polldata)
         self.timer.stop()
 

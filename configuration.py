@@ -26,7 +26,7 @@ rf1_LO = 7. * u.GHz
 rf1_IF = 100 * u.MHz
 
 # Pulse length
-pulse_len = 10 * u.us
+pulse_len = 1 * u.us
 pulse_amp = 0.1
 
 # Time of flight

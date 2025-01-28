@@ -5,7 +5,7 @@ importlib.reload(configuration)
 from configuration import qm
 from live_plot import LivePlotWindow
 from scipy.signal import savgol_filter
-
+import numpy as np
 
 from qualang_tools.units import unit
 u = unit(coerce_to_integer=True)
@@ -52,9 +52,9 @@ class myLivePlot(LivePlotWindow):
         adc1 = u.raw2volts(adc1)
         adc2 = u.raw2volts(adc2)
         adc1_single_run = u.raw2volts(adc1_single_run)
-        adc2_single_run = u.raw2volts(adc2_single_run))  
+        adc2_single_run = u.raw2volts(adc2_single_run)
         # Filter the data to get the pulse arrival time
-        adc1_unbiased = adc1 - np.mean(adc1)
+        adc1_unbiased = adc1  - np.mean(adc1)
         adc2_unbiased = adc2 - np.mean(adc2)
         signal = savgol_filter(np.abs(adc1_unbiased + 1j * adc2_unbiased), 11, 3)
         # Detect the arrival of the readout signal
@@ -79,8 +79,9 @@ class myLivePlot(LivePlotWindow):
         print(f"DC offset to add to I in the config: {-self.summary[0]:.6f} V")
         print(f"DC offset to add to Q in the config: {-self.summary[1]:.6f} V")
         print(f"Time Of Flight to add in the config: {self.summary[2]} ns")
-        self.job.halt()
+        self.timer.timeout.disconnect(self.polldata)
         self.timer.stop()
+
         
         
 #######################
