@@ -24,20 +24,16 @@ qop_port = None  # Write the QOP port if version < QOP220
 #############################################
 main_LO = 7.0 * u.GHz
 carrier_IF = 250 * u.MHz
-tx_IF = 125 * u.MHz
+tx_IF = 200 * u.MHz
 
 # Time of flight
 time_of_flight = 216
 
 # Pulse length
-readout_pulse_len = 16 * u.ns
-
-msg=np.load("msg.npz")
-msgI=np.kron(msg["x"],np.ones(64))
-msgQ=np.kron(msg["y"],np.ones(64))
+readout_pulse_len = 10 * u.us
 
 # Pulse length
-pulse_len = len(msg)
+pulse_len = 20 * u.us
 pulse_amp = 0.1
 
 #############################################
@@ -67,7 +63,6 @@ config = {
             "intermediate_frequency": carrier_IF,
             "operations": {
                 "cw": "pulse",
-                "cw": "message",
             },
             "time_of_flight": time_of_flight,
             "smearing": 0,
@@ -78,7 +73,6 @@ config = {
             "intermediate_frequency": tx_IF,
             "operations": {
                 "cw": "pulse",
-                "cw": "message",
             },
             "time_of_flight": time_of_flight,
             "smearing": 0,
@@ -141,16 +135,8 @@ config = {
             "length": pulse_len,
             "waveforms": {
                 "I": "const_wf",
-                "Q": "zero_wf",
+                "Q": "const_wf",
             },
-        },
-        "message": {
-            "operation": "control",
-            "length": len(msgI),
-            "waveforms": {
-                "I": "message_I",
-                "Q": "message_Q",
-            },            
         },
         "readout_pulse": {
             "operation": "measurement",
@@ -170,8 +156,6 @@ config = {
     "waveforms": {
         "const_wf": {"type": "constant", "sample": pulse_amp},
         "zero_wf": {"type": "constant", "sample": 0.0},
-        "message_I": {"type": "arbitrary", "samples": msgI},
-        "message_Q": {"type": "arbitrary", "samples": msgQ},
     },
     "digital_waveforms": {
         "ON": {"samples": [(1, 0)]},

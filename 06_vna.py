@@ -1,9 +1,5 @@
 from qm.qua import *
-import importlib
-import configuration_qpsk
-importlib.reload(configuration_qpsk)
-from configuration_qpsk import qm
-
+from configuration import qm, rf1_LO
 from live_plot import LivePlotWindow
 
 from qualang_tools.loops import from_array
@@ -14,32 +10,29 @@ import numpy as np
 ###################
 # The QUA program #
 ###################
-n_points=2048
-
-msg=np.load("msg_1007.npz")
-msgI=msg["x"]
-msgQ=msg["y"]
+# The frequency sweep parameters
+f_min = 100 * u.MHz
+f_max = 300 * u.MHz
+df = 100 * u.kHz
+frequencies = np.arange(f_min, f_max + 0.1, df)  # The frequency vector (+ 0.1 to add f_max to frequencies)
 
 with program() as prog:
     n = declare(int)  # QUA variable for the averaging loop
-    m = declare(int)
-    Im = declare(fixed,value=msgI)
-    Qm = declare(fixed,value=msgQ)    
+    f = declare(int)  # QUA variable for the readout frequency
     I = declare(fixed)  # QUA variable for the measured 'I' quadrature
     Q = declare(fixed)  # QUA variable for the measured 'Q' quadrature
     I_st = declare_stream()  # Stream for the 'I' quadrature
     Q_st = declare_stream()  # Stream for the 'Q' quadrature
+    n_st = declare_stream()  # Stream for the averaging iteration 'n'
     
     with infinite_loop_():
-        with for_(m, 0, m < len(msgI), m + 1):  # QUA for_ loop for averaging
-            play("pulse" * amp(Im[m],0.,0.,Qm[m]),"emitter")
-
-    with infinite_loop_():
-        with for_(n, 0, n < n_points, n + 1):  # QUA for_ loop for averaging
+        with for_(*from_array(f, frequencies)):  # QUA for_ loop for sweeping the frequency
+            # Update the frequency of the digital oscillator linked to the resonator element
+            update_frequency("rf1", f)
             # Send a readout pulse and demodulate the signals to get the 'I' & 'Q' quadratures)
             measure(
                 "readout",
-                "receiver",
+                "rf1",
                 None,
                 dual_demod.full("cos", "sin", I),
                 dual_demod.full("minus_sin", "cos", Q),
@@ -50,7 +43,8 @@ with program() as prog:
 
     with stream_processing():
         # Cast the data into a 1D vector, average the 1D vectors together and store the results on the OPX processor
-        I_st.buffer(n_points).zip(Q_st.buffer(n_points)).save("IQ")
+        I_st.buffer(len(frequencies)).zip(Q_st.buffer(len(frequencies))).save("IQ")
+
 
 ####################
 # Live plot        #
@@ -60,31 +54,25 @@ class myLivePlot(LivePlotWindow):
         # Create plot axes
         self.ax = self.canvas.figure.subplots()
         # Plot
-        self.spectrum = self.ax.plot(np.ones(n_points),np.ones(n_points),',')[0]
-        self.ax.set_xlabel('I')
-        self.ax.set_ylabel('Q')
-        self.ax.set_xlim(-0.3,0.3)
-        self.ax.set_ylim(-0.3,0.3)
-        self.ax.set_aspect('equal')
-        self.rot_angle = 0.
+        self.spectrum = self.ax.plot((spectro_LO + frequencies)/1e6,np.ones(len(frequencies)))[0]
+        self.ax.set_xlabel('Frequency (MHz)')
+        self.ax.set_ylabel('Signal (dB)')
+        self.ax.set_ylim(-120,-10)
         
     def polldata(self):
+        # Fetch the raw ADC traces and convert them into Volts
         IQ = self.job.result_handles.get("IQ").fetch(1)
         if IQ is None:
             return        
         I = IQ['value_0']
         Q = IQ['value_1']
-        a = self.rot_angle/180*np.pi
-        Ir = np.cos(a)*I-np.sin(a)*Q
-        Qr = np.sin(a)*I+np.cos(a)*Q
-        self.spectrum.set_xdata(Ir)
-        self.spectrum.set_ydata(Qr)
+        self.spectrum.set_ydata(10*np.log10(I**2+Q**2))
         self.canvas.draw()
 
 #######################
 # Execute the program #
 #######################
 job = qm.execute(prog)
-window = myLivePlot(job)
 qm.set_io1_value(1.0)
+window = myLivePlot(job)
 window.show()

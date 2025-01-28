@@ -11,11 +11,17 @@ import numpy as np
 ###################
 # The QUA program #
 ###################
-n_points=4096
+n_points=2048
+
+msg=np.load("msg_1007.npz")
+msgI=msg["x"]
+msgQ=msg["y"]
 
 with program() as prog:
     n = declare(int)  # QUA variable for the averaging loop
-    f = declare(int)  # QUA variable for the readout frequency
+    m = declare(int)
+    Im = declare(fixed,value=msgI)
+    Qm = declare(fixed,value=msgQ)    
     I = declare(fixed)  # QUA variable for the measured 'I' quadrature
     Q = declare(fixed)  # QUA variable for the measured 'Q' quadrature
     I_st = declare_stream()  # Stream for the 'I' quadrature
@@ -27,7 +33,10 @@ with program() as prog:
     Ql_st = declare_stream()  # Stream for the 'Q' quadrature
     
     with infinite_loop_():
-        play("message","emitter")
+        with for_(m, 0, m < len(msgI), m + 1):  # QUA for_ loop for averaging
+            play("pulse" * amp(Im[m],0.,0.,Qm[m]),"emitter")
+        
+    with infinite_loop_():
         play("pulse","carrier")
 
     with infinite_loop_():
@@ -52,14 +61,11 @@ with program() as prog:
             save(Q, Q_st)
             save(Il, Il_st)
             save(Ql, Ql_st)
-        wait(5*u.ms)
 
     with stream_processing():
         # Cast the data into a 1D vector, average the 1D vectors together and store the results on the OPX processor
-        I_st.buffer(n_points).save("I")
-        Q_st.buffer(n_points).save("Q")
-        Il_st.buffer(n_points).save("Il")
-        Ql_st.buffer(n_points).save("Ql")
+        I_st.buffer(n_points).zip(Q_st.buffer(n_points)).zip(Il_st.buffer(n_points)).zip(Ql_st.buffer(n_points)).save("IQ")
+
 
 ####################
 # Live plot        #
@@ -72,18 +78,19 @@ class myLivePlot(LivePlotWindow):
         self.spectrum = self.ax.plot(np.ones(n_points),np.ones(n_points),',')[0]
         self.ax.set_xlabel('I')
         self.ax.set_ylabel('Q')
-        self.ax.set_xlim(-0.001,0.001)
-        self.ax.set_ylim(-0.001,0.001)
+        self.ax.set_xlim(-0.3,0.3)
+        self.ax.set_ylim(-0.3,0.3)
         self.ax.set_aspect('equal')
         self.rot_angle = 0
         
     def polldata(self):
-        I = self.job.result_handles.get("I").fetch(1)
-        Q = self.job.result_handles.get("Q").fetch(1)
-        Il = self.job.result_handles.get("Il").fetch(1)
-        Ql = self.job.result_handles.get("Ql").fetch(1)
-        if I is None or Q is None or Il is None or Ql is None:
-            return
+        IQ = self.job.result_handles.get("IQ").fetch(1)
+        if IQ is None:
+            return        
+        I = IQ['value_0']
+        Q = IQ['value_1']        
+        Il = IQ['value_2']
+        Ql = IQ['value_3']
         a = self.rot_angle/180*np.pi - np.angle(Il+1j*Ql)
         Ir = np.cos(a)*I-np.sin(a)*Q
         Qr = np.sin(a)*I+np.cos(a)*Q

@@ -44,8 +44,7 @@ with program() as prog:
 
     with stream_processing():
         # Cast the data into a 1D vector, average the 1D vectors together and store the results on the OPX processor
-        I_st.buffer(n_points).save("I")
-        Q_st.buffer(n_points).save("Q")
+        I_st.buffer(n_points).zip(Q_st.buffer(n_points)).save("IQ")
 
 ####################
 # Live plot        #
@@ -64,10 +63,11 @@ class myLivePlot(LivePlotWindow):
         
     def polldata(self):
         # Fetch the raw ADC traces and convert them into Volts
-        I = self.job.result_handles.get("I").fetch(1)
-        Q = self.job.result_handles.get("Q").fetch(1)
-        if I is None or Q is None:
-            return
+        IQ = self.job.result_handles.get("IQ").fetch(1)
+        if IQ is None:
+            return        
+        I = IQ['value_0']
+        Q = IQ['value_1']
         self.spectrum.set_xdata(I)
         self.spectrum.set_ydata(Q)
         self.canvas.draw()
