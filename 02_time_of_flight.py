@@ -1,7 +1,4 @@
 from qm.qua import *
-import importlib
-import configuration
-importlib.reload(configuration)
 from configuration import qm
 from live_plot import LivePlotWindow
 from scipy.signal import savgol_filter
