@@ -1,7 +1,4 @@
 from qm.qua import *
-import importlib
-import configuration_qpsk
-importlib.reload(configuration_qpsk)
 from configuration_qpsk import qm
 
 from live_plot import LivePlotWindow
