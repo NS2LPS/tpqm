@@ -1,7 +1,4 @@
 from qm.qua import *
-import importlib
-import configuration_spectro_IQ
-importlib.reload(configuration_spectro_IQ)
 from configuration_spectro_IQ import qm
 from live_plot import LivePlotWindow
 
