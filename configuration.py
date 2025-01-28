@@ -15,7 +15,7 @@ u = unit(coerce_to_integer=True)
 ######################
 # Network parameters #
 ######################
-from qp_address import qop
+from qp_ip import qop_ip
 cluster_name = "Cluster_1"  # Write your cluster_name if version >= QOP220
 qop_port = None  # Write the QOP port if version < QOP220
 
