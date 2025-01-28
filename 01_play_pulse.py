@@ -1,7 +1,4 @@
 from qm.qua import *
-import importlib
-import configuration
-importlib.reload(configuration)
 from configuration import qm
 
 
