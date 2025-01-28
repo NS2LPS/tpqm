@@ -19,7 +19,6 @@ u = unit(coerce_to_integer=True)
 from qm_ip import qop_ip, cluster_name
 qop_port = None  # Write the QOP port if version < QOP220
 
-
 #############################################
 #                Radar                      #
 #############################################
