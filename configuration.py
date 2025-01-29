@@ -21,7 +21,7 @@ qop_port = None  # Write the QOP port if version < QOP220
 #############################################
 #                Radar                      #
 #############################################
-rf1_LO = 7. * u.GHz
+rf1_LO = 10. * u.GHz
 rf1_IF = 100 * u.MHz
 
 # Pulse length
@@ -45,8 +45,8 @@ config = {
             },
             "digital_outputs": {},
             "analog_inputs": {
-                1: {"offset": 0.009342, "gain_db": -6},  # I from down-conversion
-                2: {"offset": 0.003681, "gain_db": -6},  # Q from down-conversion
+                1: {"offset": 0.009342, "gain_db": 4},  # I from down-conversion
+                2: {"offset": 0.003681, "gain_db": 4},  # Q from down-conversion
             },
         },
     },
@@ -70,7 +70,7 @@ config = {
                     "LO_frequency": rf1_LO,
                     "LO_source": "internal",
                     "output_mode": "always_on",
-                    "gain": 0,
+                    "gain": 10,
                 },
             },
             "RF_inputs": {
