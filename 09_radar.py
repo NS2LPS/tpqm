@@ -1,5 +1,5 @@
 from qm.qua import *
-from configuration_fmcw import qm
+from configuration_radar import qm
 from live_plot import LivePlotWindow
 
 from qualang_tools.loops import from_array
@@ -11,9 +11,9 @@ import numpy as np
 # The QUA program #
 ###################
 f_min = 100 * u.MHz
-f_max = 300 * u.MHz
-df = 100 * u.kHz
-frequencies = np.arange(f_min, f_max + 0.1, df)  # The frequency vector (+ 0.1 to add f_max to frequencies)
+df = 1 * u.MHz
+n_points = 128
+frequencies = f_min + np.arange(n_points)*df  
 
 with program() as prog:
     n = declare(int)  # QUA variable for the averaging loop
@@ -42,7 +42,7 @@ with program() as prog:
 
     with stream_processing():
         # Cast the data into a 1D vector, average the 1D vectors together and store the results on the OPX processor
-        I_st.buffer(n_points).zip(Q_st.buffer(n_points)).save("IQ")
+        I_st.buffer(n_points,n_points).zip(Q_st.buffer(n_points,n_points)).save("IQ")
 
 ####################
 # Live plot        #
@@ -52,12 +52,7 @@ class myLivePlot(LivePlotWindow):
         # Create plot axes
         self.ax = self.canvas.figure.subplots()
         # Plot
-        self.spectrum = self.ax.plot(np.ones(n_points),np.ones(n_points),'.')[0]
-        self.ax.set_xlabel('I')
-        self.ax.set_ylabel('Q')
-        self.ax.set_xlim(-0.3,0.3)
-        self.ax.set_ylim(-0.3,0.3)
-        self.ax.set_aspect('equal')
+        self.spectrum = self.ax.imshow(np.ones((n_points,n_points)))
         
     def polldata(self):
         # Fetch the raw ADC traces and convert them into Volts
@@ -66,8 +61,12 @@ class myLivePlot(LivePlotWindow):
             return        
         I = IQ['value_0']
         Q = IQ['value_1']
-        self.spectrum.set_xdata(I)
-        self.spectrum.set_ydata(Q)
+        M = abs(np.fft.fft2(I+1j*Q))
+        M[0,0] = np.nan
+        M = np.fft.fftshift(M)
+        self.M = M
+        self.spectrum.set_data(M)
+        self.spectrum.set_clim(np.nanmin(M),np.nanmax(M))
         self.canvas.draw()
 
 #######################
