@@ -29,18 +29,17 @@ with program() as prog:
         play("pulse" * amp(0.0,1.0,-1.0,0.0), "rf1")
 
     with infinite_loop_():
-        with for_(n, 0, n < n_points, n + 1):  # QUA for_ loop for averaging
-            # Send a readout pulse and demodulate the signals to get the 'I' & 'Q' quadratures)
-            measure(
-                "readout",
-                "spectro",
-                None,
-                dual_demod.full("cos", "sin", I),
-                dual_demod.full("minus_sin", "cos", Q),
-            )
-            # Save the 'I' & 'Q' quadratures to their respective streams
-            save(I, I_st)
-            save(Q, Q_st)
+        # Send a readout pulse and demodulate the signals to get the 'I' & 'Q' quadratures)
+        measure(
+            "readout",
+            "spectro",
+            None,
+            dual_demod.full("cos", "sin", I),
+            dual_demod.full("minus_sin", "cos", Q),
+        )
+        # Save the 'I' & 'Q' quadratures to their respective streams
+        save(I, I_st)
+        save(Q, Q_st)
 
     with stream_processing():
         # Cast the data into a 1D vector, average the 1D vectors together and store the results on the OPX processor
