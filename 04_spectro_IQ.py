@@ -13,13 +13,10 @@ import numpy as np
 n_points = 1024
 
 with program() as prog:
-    n = declare(int)  # QUA variable for the averaging loop
-    f = declare(int)  # QUA variable for the readout frequency
     I = declare(fixed)  # QUA variable for the measured 'I' quadrature
     Q = declare(fixed)  # QUA variable for the measured 'Q' quadrature
     I_st = declare_stream()  # Stream for the 'I' quadrature
     Q_st = declare_stream()  # Stream for the 'Q' quadrature
-    n_st = declare_stream()  # Stream for the averaging iteration 'n'
     
     with infinite_loop_():
         #play('pulse_name'*  amp(v_00, v_01, v_10, v_11), 'element'),
@@ -29,7 +26,7 @@ with program() as prog:
         play("pulse" * amp(0.0,1.0,-1.0,0.0), "rf1")
 
     with infinite_loop_():
-        # Send a readout pulse and demodulate the signals to get the 'I' & 'Q' quadratures)
+        # Demodulate the signals to get the 'I' & 'Q' quadratures)
         measure(
             "readout",
             "spectro",
@@ -42,7 +39,7 @@ with program() as prog:
         save(Q, Q_st)
 
     with stream_processing():
-        # Cast the data into a 1D vector, average the 1D vectors together and store the results on the OPX processor
+        # Cast the data into a 1D vector, and store the results on the OPX processor
         I_st.buffer(n_points).zip(Q_st.buffer(n_points)).save("IQ")
 
 ####################

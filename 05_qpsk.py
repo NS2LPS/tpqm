@@ -31,12 +31,12 @@ with program() as prog:
     Q_st = declare_stream()  # Stream for the 'Q' quadrature
     
     with infinite_loop_():
-        with for_(m, 0, m < len(msgI), m + 1):  # QUA for_ loop for averaging
+        with for_(m, 0, m < len(msgI), m + 1):  
             play("pulse" * amp(Im[m],0.,0.,Qm[m]),"emitter")
 
     with infinite_loop_():
-        with for_(n, 0, n < n_points, n + 1):  # QUA for_ loop for averaging
-            # Send a readout pulse and demodulate the signals to get the 'I' & 'Q' quadratures)
+        with for_(n, 0, n < n_points, n + 1):  
+            # Demodulate the signals to get the 'I' & 'Q' quadratures)
             measure(
                 "readout",
                 "receiver",
@@ -49,7 +49,7 @@ with program() as prog:
             save(Q, Q_st)
 
     with stream_processing():
-        # Cast the data into a 1D vector, average the 1D vectors together and store the results on the OPX processor
+        # Cast the data into a 1D vector and store the results on the OPX processor
         I_st.buffer(n_points).zip(Q_st.buffer(n_points)).save("IQ")
 
 ####################

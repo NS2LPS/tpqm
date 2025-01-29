@@ -17,17 +17,15 @@ df = 100 * u.kHz
 frequencies = np.arange(f_min, f_max + 0.1, df)  # The frequency vector (+ 0.1 to add f_max to frequencies)
 
 with program() as prog:
-    n = declare(int)  # QUA variable for the averaging loop
     f = declare(int)  # QUA variable for the readout frequency
     I = declare(fixed)  # QUA variable for the measured 'I' quadrature
     Q = declare(fixed)  # QUA variable for the measured 'Q' quadrature
     I_st = declare_stream()  # Stream for the 'I' quadrature
     Q_st = declare_stream()  # Stream for the 'Q' quadrature
-    n_st = declare_stream()  # Stream for the averaging iteration 'n'
     
     with infinite_loop_():
         with for_(*from_array(f, frequencies)):  # QUA for_ loop for sweeping the frequency
-            # Update the frequency of the digital oscillator linked to the resonator element
+            # Update the frequency of the digital oscillator 
             update_frequency("rf1", f)
             # Send a readout pulse and demodulate the signals to get the 'I' & 'Q' quadratures)
             measure(
@@ -42,7 +40,7 @@ with program() as prog:
             save(Q, Q_st)
 
     with stream_processing():
-        # Cast the data into a 1D vector, average the 1D vectors together and store the results on the OPX processor
+        # Cast the data into a 1D vector and store the results on the OPX processor
         I_st.buffer(len(frequencies)).zip(Q_st.buffer(len(frequencies))).save("IQ")
 
 
