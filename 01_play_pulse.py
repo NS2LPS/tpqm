@@ -9,6 +9,9 @@ from configuration import qm
 with program() as prog:
     with infinite_loop_():
         play("pulse", "rf1")
+        wait(2)
+        play("pulse", "rf1")
+        wait(1000)
 
 
 #######################

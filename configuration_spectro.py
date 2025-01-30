@@ -22,7 +22,7 @@ qop_port = None  # Write the QOP port if version < QOP220
 #############################################
 #       Experimental Parameters             #
 #############################################
-rf1_LO = 7.0 * u.GHz
+rf1_LO = 2.5 * u.GHz
 rf1_IF = 50 * u.MHz
 
 # Pulse length
@@ -35,7 +35,7 @@ time_of_flight = 216
 #############################################
 #                Spectro                    #
 #############################################
-spectro_LO = 6.8 * u.GHz
+spectro_LO = 2.3 * u.GHz
 spectro_IF = 250 * u.MHz
 
 # Pulse length

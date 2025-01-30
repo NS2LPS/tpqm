@@ -21,8 +21,8 @@ qop_port = None  # Write the QOP port if version < QOP220
 #############################################
 #       Experimental Parameters             #
 #############################################
-rf1_LO = 10. * u.GHz
-rf1_IF = 100 * u.MHz
+rf1_LO = 7. * u.GHz
+rf1_IF = 50. * u.MHz
 
 # Pulse length
 pulse_len = 1 * u.us
