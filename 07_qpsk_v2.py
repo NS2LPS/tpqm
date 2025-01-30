@@ -63,7 +63,7 @@ with program() as prog:
             save(Ql, Ql_st)
 
     with stream_processing():
-        # Cast the data into a 1D vector, average the 1D vectors together and store the results on the OPX processor
+        # Cast the data into a 1D vector and store the results on the OPX processor
         I_st.buffer(n_points).zip(Q_st.buffer(n_points)).zip(Il_st.buffer(n_points)).zip(Ql_st.buffer(n_points)).save("IQ")
 
 

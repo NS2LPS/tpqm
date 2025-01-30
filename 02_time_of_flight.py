@@ -38,7 +38,7 @@ class myLivePlot(LivePlotWindow):
         self.ax = self.canvas.figure.subplots(2,1,sharex=True)        
 
     def polldata(self):
-        # Fetch the raw ADC traces and convert them into Volts
+        # Fetch the raw ADC traces
         adc1 = self.job.result_handles.get("adc1").fetch(1)
         adc2 = self.job.result_handles.get("adc2").fetch(1)
         adc1_single_run = self.job.result_handles.get("adc1_single_run").fetch(1)

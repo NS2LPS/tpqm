@@ -19,14 +19,14 @@ from qm_ip import qop_ip, cluster_name
 qop_port = None  # Write the QOP port if version < QOP220
 
 #############################################
-#                Radar                      #
+#       Experimental Parameters             #
 #############################################
 rf1_LO = 10. * u.GHz
 rf1_IF = 100 * u.MHz
 
 # Pulse length
 pulse_len = 1 * u.us
-pulse_amp = 0.1
+pulse_amp = 0.1  # Keep this value between -0.125 and +0.125
 
 # Time of flight
 time_of_flight = 216

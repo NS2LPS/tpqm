@@ -21,7 +21,7 @@ qop_port = None  # Write the QOP port if version < QOP220
 
 
 #############################################
-#                Radar                      #
+#       Experimental Parameters             #
 #############################################
 rf1_LO = 7.0 * u.GHz
 rf1_IF = 250 * u.MHz

@@ -58,7 +58,7 @@ class myLivePlot(LivePlotWindow):
         self.ax.set_ylim(-120,-10)
         
     def polldata(self):
-        # Fetch the raw ADC traces and convert them into Volts
+        # Fetch the raw ADC traces
         IQ = self.job.result_handles.get("IQ").fetch(1)
         if IQ is None:
             return        

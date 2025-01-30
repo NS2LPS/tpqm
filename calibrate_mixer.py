@@ -1,10 +1,10 @@
-# Use 'run -i calibrate_mixer' to calibrate the mixer
-# Then, restart the QM with 'run -i reload' 
+# Run this file to calibrate the mixer
+# Then, restart the QM with 'run -i configuration' 
 
 from configuration import rf1_LO, rf1_IF, qm
 
 caldict = {rf1_LO: [rf1_IF,]}
 
 print('Calibrating ...')
-qm.calibrate_element('radar',caldict)
+qm.calibrate_element('rf1',caldict)
 print('Done')    

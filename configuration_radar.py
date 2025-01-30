@@ -19,7 +19,7 @@ from qm_ip import qop_ip, cluster_name
 qop_port = None  # Write the QOP port if version < QOP220
 
 #############################################
-#                Radar                      #
+#       Experimental Parameters             #
 #############################################
 radar_LO = 10. * u.GHz
 radar_IF = 100 * u.MHz
