@@ -15,6 +15,7 @@ f_min = 100 * u.MHz
 f_max = 300 * u.MHz
 df = 100 * u.kHz
 frequencies = np.arange(f_min, f_max + 0.1, df)  # The frequency vector (+ 0.1 to add f_max to frequencies)
+n_points = len(frequencies)
 
 with program() as prog:
     f = declare(int)  # QUA variable for the spectro frequency
@@ -57,7 +58,7 @@ class myLivePlot(LivePlotWindow):
         self.spectrum = self.ax.plot((spectro_LO + frequencies)/1e6,np.ones(len(frequencies)))[0]
         self.ax.set_xlabel('Frequency (MHz)')
         self.ax.set_ylabel('Signal (dB)')
-        self.ax.set_ylim(-120,-10)
+        self.ax.set_ylim(-120,0)
         
     def polldata(self):
         # Fetch the raw ADC traces
