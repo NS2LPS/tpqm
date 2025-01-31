@@ -1,0 +1,7 @@
+Tuto sur le radar position/vitesse avec la technique FCWM (Frequency Modulated Continuous Wave Radar):
+
+https://wirelesspi.com/fmcw-radar-part-1-ranging/
+
+https://wirelesspi.com/fmcw-radar-part-2-velocity-angle-and-radar-data-cube/
+
+https://wirelesspi.com/fmcw-radar-part-3-design-guidelines/
