@@ -22,7 +22,11 @@ qop_port = None  # Write the QOP port if version < QOP220
 #############################################
 #       Experimental Parameters             #
 #############################################
-main_LO = 10.0 * u.GHz
+emitter_LO = 10.0 * u.GHz
+carrier_IF = 250 * u.MHz
+tx_IF = 200 * u.MHz
+
+receiver_LO = 11.0 * u.GHz
 carrier_IF = 250 * u.MHz
 tx_IF = 200 * u.MHz
 
@@ -102,13 +106,13 @@ config = {
         "oct1": {
             "RF_outputs": {
                 1: {
-                    "LO_frequency": main_LO,
+                    "LO_frequency": emitter_LO,
                     "LO_source": "internal",
                     "output_mode": "always_on",
                     "gain": 0,
                 },
                 2: {
-                    "LO_frequency": main_LO,
+                    "LO_frequency": receiver_LO,
                     "LO_source": "internal",
                     "output_mode": "always_on",
                     "gain": 0,
@@ -116,13 +120,13 @@ config = {
             },
             "RF_inputs": {
                 1: {
-                    "LO_frequency": main_LO,
+                    "LO_frequency": emitter_LO,
                     "LO_source": "internal",
                 },
             },
             "RF_inputs": {
                 2: {
-                    "LO_frequency": main_LO,
+                    "LO_frequency": receiver_LO,
                     "LO_source": "external",
                 },
             },
