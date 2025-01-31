@@ -88,10 +88,11 @@ class myLivePlot(LivePlotWindow):
         Il = IQ['value_2']
         Ql = IQ['value_3']
         a = np.angle(Il+1j*Ql)
-        Ir =  np.cos(a)*I+np.sin(a)*Q
-        Qr = -np.sin(a)*I+np.cos(a)*Q
-        self.spectrum.set_xdata(Ir)
-        self.spectrum.set_ydata(Qr)
+        S = (I+1j*Q)#*np.exp(-1j*a)
+        p = np.polyfit(np.arange(n_points),np.unwrap(np.angle(S)),1)
+        S *= np.exp(-1j*np.polyval(p,np.arange(n_points)))
+        self.spectrum.set_xdata(S.real)
+        self.spectrum.set_ydata(S.imag)
         self.canvas.draw()
 
 #######################
