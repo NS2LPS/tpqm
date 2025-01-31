@@ -11,8 +11,8 @@ import numpy as np
 # The QUA program #
 ###################
 # The frequency sweep parameters
-f_min = 100 * u.MHz
-f_max = 300 * u.MHz
+f_min = 80 * u.MHz
+f_max = 320 * u.MHz
 df = 100 * u.kHz
 frequencies = np.arange(f_min, f_max + 0.1, df)  # The frequency vector (+ 0.1 to add f_max to frequencies)
 n_points = len(frequencies)
