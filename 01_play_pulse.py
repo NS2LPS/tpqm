@@ -1,6 +1,7 @@
 from qm.qua import *
 from configuration import qm
-
+from qualang_tools.units import unit
+u = unit(coerce_to_integer=True)
 
 
 ###################
@@ -9,9 +10,7 @@ from configuration import qm
 with program() as prog:
     with infinite_loop_():
         play("pulse", "rf1")
-        wait(2)
-        play("pulse", "rf1")
-        wait(1000)
+        wait(10*u.us)
 
 
 #######################

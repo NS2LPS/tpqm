@@ -6,7 +6,7 @@ import numpy as np
 import time
 
 class LivePlotWindow(QtWidgets.QMainWindow):
-    def __init__(self, job):
+    def __init__(self, job, timer=50):
         super().__init__()
         self.setAttribute(QtCore.Qt.WA_DeleteOnClose, True)        
         self.last_poll = 0
@@ -33,7 +33,7 @@ class LivePlotWindow(QtWidgets.QMainWindow):
         # Polling timer               
         self.timer = QtCore.QTimer(self) #in ms
         self.timer.timeout.connect(self.polldata)
-        self.timer.start(50)
+        self.timer.start(timer)
         # Timer button
         pause.clicked.connect(self.timer.stop)
         resume.clicked.connect(self.timer.start)        

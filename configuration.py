@@ -21,11 +21,11 @@ qop_port = None  # Write the QOP port if version < QOP220
 #############################################
 #       Experimental Parameters             #
 #############################################
-rf1_LO = 7. * u.GHz
-rf1_IF = 50. * u.MHz
+rf1_LO = 10. * u.GHz
+rf1_IF = 250. * u.MHz
 
 # Pulse length
-pulse_len = 1 * u.us
+pulse_len = 20 * u.ns
 pulse_amp = 0.1  # Keep this value between -0.125 and +0.125
 
 # Time of flight
@@ -52,12 +52,10 @@ config = {
     },
     "elements": {
         "rf1": {
-            "RF_inputs": {"port": ("oct1", 1)},
             "RF_outputs": {"port": ("oct1", 1)},
             "intermediate_frequency": rf1_IF,
             "operations": {
                 "cw": "pulse",
-                "readout": "readout_pulse",
             },
             "time_of_flight": time_of_flight,
             "smearing": 0,
@@ -73,12 +71,6 @@ config = {
                     "gain": 10,
                 },
             },
-            "RF_inputs": {
-                1: {
-                    "LO_frequency": rf1_LO,
-                    "LO_source": "internal",
-                },
-            },
             "connectivity": "con1",
         },
     },
@@ -91,20 +83,6 @@ config = {
                 "Q": "zero_wf",
             },
         },
-        "readout_pulse": {
-            "operation": "measurement",
-            "length": pulse_len,
-            "waveforms": {
-                "I": "const_wf",
-                "Q": "zero_wf",
-            },
-            "integration_weights": {
-                "cos": "cosine_weights",
-                "sin": "sine_weights",
-                "minus_sin": "minus_sine_weights",
-            },
-            "digital_marker": "ON",
-        },
     },
     "waveforms": {
         "const_wf": {"type": "constant", "sample": pulse_amp},
@@ -112,20 +90,6 @@ config = {
     },
     "digital_waveforms": {
         "ON": {"samples": [(1, 0)]},
-    },
-    "integration_weights": {
-        "cosine_weights": {
-            "cosine": [(1.0, pulse_len)],
-            "sine": [(0.0, pulse_len)],
-        },
-        "sine_weights": {
-            "cosine": [(0.0, pulse_len)],
-            "sine": [(1.0, pulse_len)],
-        },
-        "minus_sine_weights": {
-            "cosine": [(0.0, pulse_len)],
-            "sine": [(-1.0, pulse_len)],
-        },
     },
 }
 

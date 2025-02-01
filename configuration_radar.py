@@ -22,7 +22,7 @@ qop_port = None  # Write the QOP port if version < QOP220
 #       Experimental Parameters             #
 #############################################
 radar_LO = 10. * u.GHz
-radar_IF = 100 * u.MHz
+radar_IF = 250 * u.MHz
 
 # Pulse length
 pulse_len = 10 * u.us
@@ -56,8 +56,7 @@ config = {
             "RF_outputs": {"port": ("oct1", 1)},
             "intermediate_frequency": radar_IF,
             "operations": {
-                "cw": "pulse",
-                "readout": "readout_pulse",
+                "readout": "pulse",
             },
             "time_of_flight": time_of_flight,
             "smearing": 0,
@@ -84,14 +83,6 @@ config = {
     },
     "pulses": {
         "pulse": {
-            "operation": "control",
-            "length": pulse_len,
-            "waveforms": {
-                "I": "const_wf",
-                "Q": "zero_wf",
-            },
-        },
-        "readout_pulse": {
             "operation": "measurement",
             "length": pulse_len,
             "waveforms": {
