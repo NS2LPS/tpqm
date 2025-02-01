@@ -49,11 +49,11 @@ class myLivePlot(LivePlotWindow):
         # Create plot axes
         self.ax = self.canvas.figure.subplots()
         # Plot
-        self.spectrum = self.ax.plot(np.ones(n_points),np.ones(n_points),'o')[0]
+        self.spectrum = self.ax.scatter(np.ones(n_points),np.ones(n_points),s=100,c=['C0','C1','C2','C3'])
         self.ax.set_xlabel('I')
         self.ax.set_ylabel('Q')
-        self.ax.set_xlim(-0.3,0.3)
-        self.ax.set_ylim(-0.3,0.3)
+        self.ax.set_xlim(-0.5,0.5)
+        self.ax.set_ylim(-0.5,0.5)
         self.ax.set_aspect('equal')
         
     def polldata(self):
@@ -63,8 +63,7 @@ class myLivePlot(LivePlotWindow):
             return        
         I = IQ['value_0']
         Q = IQ['value_1']
-        self.spectrum.set_xdata(I)
-        self.spectrum.set_ydata(Q)
+        self.spectrum.set_offsets(np.c_[I,Q])
         self.canvas.draw()
         
 

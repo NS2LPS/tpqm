@@ -52,8 +52,8 @@ config = {
             },
             "digital_outputs": {},
             "analog_inputs": {
-                1: {"offset": 0.009342, "gain_db": -6},  # I from down-conversion
-                2: {"offset": 0.003681, "gain_db": -6},  # Q from down-conversion
+                1: {"offset": 0.009342, "gain_db": 0},  # I from down-conversion
+                2: {"offset": 0.003681, "gain_db": 0},  # Q from down-conversion
             },
         },
     },
@@ -105,7 +105,7 @@ config = {
             "length": pulse_len,
             "waveforms": {
                 "I": "const_wf",
-                "Q": "zer_wf",
+                "Q": "zero_wf",
             },
         },
         "readout_pulse": {

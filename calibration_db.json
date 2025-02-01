@@ -1,0 +1,45 @@
+{
+    "modes": {
+        "1": {
+            "octave_name": "oct1",
+            "octave_channel": 1
+        }
+    },
+    "lo_modes": {
+        "1": {
+            "mode_id": 1,
+            "lo_freq": 10200000000,
+            "gain": 0.0,
+            "latest": 1
+        }
+    },
+    "lo_cal": {
+        "1": {
+            "i0": -0.03176488734869677,
+            "q0": -0.037078654716799664,
+            "lo_mode_id": 1,
+            "dc_gain": -0.028990139472342524,
+            "dc_phase": 0.04836236943472102,
+            "temperature": 58.8125,
+            "timestamp": 1738425294.2572162,
+            "method": "auto"
+        }
+    },
+    "if_modes": {
+        "1": {
+            "lo_mode_id": 1,
+            "if_freq": 50000000,
+            "latest": 1
+        }
+    },
+    "if_cal": {
+        "1": {
+            "if_mode_id": 1,
+            "gain": -0.038282361681912236,
+            "phase": 0.040907933895958426,
+            "temperature": 58.8125,
+            "timestamp": 1738425294.2682676,
+            "method": "auto"
+        }
+    }
+}

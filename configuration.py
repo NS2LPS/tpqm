@@ -52,6 +52,7 @@ config = {
     },
     "elements": {
         "rf1": {
+            "RF_inputs": {"port": ("oct1", 1)},
             "RF_outputs": {"port": ("oct1", 1)},
             "intermediate_frequency": rf1_IF,
             "operations": {
@@ -68,7 +69,7 @@ config = {
                     "LO_frequency": rf1_LO,
                     "LO_source": "internal",
                     "output_mode": "always_on",
-                    "gain": 10,
+                    "gain": 0,
                 },
             },
             "connectivity": "con1",

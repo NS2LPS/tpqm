@@ -96,7 +96,7 @@ config = {
                 },
                 2: {
                     "LO_frequency": spectro_LO,
-                    "LO_source": "external",
+                    "LO_source": "internal",
                     "output_mode": "always_on",
                     "gain": 0,
                 },
@@ -110,7 +110,7 @@ config = {
             "RF_inputs": {
                 2: {
                     "LO_frequency": spectro_LO,
-                    "LO_source": "internal",
+                    "LO_source": "external",
                 },
             },
             "connectivity": "con1",

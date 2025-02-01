@@ -45,8 +45,8 @@ config = {
             },
             "digital_outputs": {},
             "analog_inputs": {
-                1: {"offset": 0.009342, "gain_db": 4},  # I from down-conversion
-                2: {"offset": 0.003681, "gain_db": 4},  # Q from down-conversion
+                1: {"offset": 0.009342, "gain_db": 0},  # I from down-conversion
+                2: {"offset": 0.003681, "gain_db": 0},  # Q from down-conversion
             },
         },
     },
@@ -69,7 +69,7 @@ config = {
                     "LO_frequency": radar_LO,
                     "LO_source": "internal",
                     "output_mode": "always_on",
-                    "gain": 10,
+                    "gain": 0,
                 },
             },
             "RF_inputs": {

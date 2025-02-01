@@ -1,5 +1,5 @@
 from qm.qua import *
-from configuration_view_IQ import qm
+from configuration_modIQ import qm
 from live_plot import LivePlotWindow
 
 from qualang_tools.loops import from_array
