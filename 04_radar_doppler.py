@@ -49,6 +49,8 @@ class myLivePlot(LivePlotWindow):
         # Plot
         self.xaxis = np.fft.fftshift(np.fft.fftfreq(n_points_velocity, d=1e-3))*3e8/2/radar_LO
         self.fftplot = self.ax[0].plot(self.xaxis, np.ones(n_points_velocity))[0]
+        self.ax[0].set_xlabel('Velocity (m/s)')
+        self.ax[1].set_ylabel('Velocity (m/s)')
         self.velocities = []
 
         

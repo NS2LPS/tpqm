@@ -1,5 +1,5 @@
 from qm.qua import *
-from configuration_radar import qm
+from configuration_radar import qm, radar_LO, pulse_len
 from live_plot import LivePlotWindow
 
 from qualang_tools.loops import from_array
@@ -13,6 +13,7 @@ import numpy as np
 f_min = 500 * u.MHz
 df = -8 * u.MHz
 n_points_position = 126
+n_zero_padding = 130
 n_points_velocity = 64
 frequencies = f_min + np.arange(n_points_position)*df  
 
@@ -53,9 +54,12 @@ class myLivePlot(LivePlotWindow):
         # Create plot axes
         self.ax = self.canvas.figure.subplots()
         # Plot
-        self.spectrum = self.ax.imshow(np.ones((n_points_velocity,n_points_position)))
+        self.xaxis = np.fft.fftshift(np.fft.fftfreq(n_points_position+n_zero_padding, d=-df))*3e8/2
+        self.yaxis = np.fft.fftshift(np.fft.fftfreq(n_points_velocity, d=1e-3))*3e8/2/radar_LO
+        self.spectrum = self.ax.pcolormesh(self.xaxis,self.yaxis,np.ones((n_points_velocity, n_points_position+n_zero_padding)))
+        self.ax.set_xlabel('Position (m)')
+        self.ax.set_ylabel('Velocity (m/s)')
         self.canvas.figure.colorbar(self.spectrum, ax=self.ax)
-        self.newplot=True        
         
         
     def polldata(self):
@@ -67,15 +71,11 @@ class myLivePlot(LivePlotWindow):
         Q = IQ['value_1']
         S = I + 1j*Q
         S = S * np.exp(-1j*self.delay*2*np.pi*frequencies)
-        M = np.abs(np.fft.fft2(S))
+        M = np.abs(np.fft.fft2(np.c_[S, np.zeros((n_points_velocity,n_zero_padding))]))
         M[0,0] = np.nan
         M = np.fft.fftshift(M)
         self.spectrum.set_data(M)
-        if self.newplot:
-            cmin = np.nanmin(M)
-            cmax = np.nanmax(M)
-            self.spectrum.set_clim(cmin,cmax)
-            self.newplot=True
+        self.spectrum.set_clim(0,np.nanmax(M))
         self.canvas.draw()
 
 #######################

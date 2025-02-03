@@ -55,6 +55,8 @@ class myLivePlot(LivePlotWindow):
         # Plot
         self.xaxis = np.fft.fftshift(np.fft.fftfreq(n_points_position+n_zero_padding, d=-df))*3e8/2
         self.fftplot = self.ax[0].plot(self.xaxis, np.ones(n_points_position+n_zero_padding))[0]
+        self.ax[0].set_xlabel('Position (m)')
+        self.ax[1].set_ylabel('Position (m)')
         self.positions = []
         self.delay = 0.0
 
