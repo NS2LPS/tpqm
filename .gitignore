@@ -1,2 +1,3 @@
 qm_ip.py
-qm_ip.py
+__pycache__/
+*.py[cod]
