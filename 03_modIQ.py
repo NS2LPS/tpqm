@@ -46,7 +46,7 @@ class myLivePlot(LivePlotWindow):
         # Create plot axes
         self.ax = self.canvas.figure.subplots()
         # Plot
-        self.spectrum = self.ax.plot(np.ones(n_points),np.ones(n_points),'.')[0]
+        self.IQplot = self.ax.plot(np.ones(n_points),np.ones(n_points),'.')[0]
         self.ax.set_xlabel('I')
         self.ax.set_ylabel('Q')
         self.rmax = 0.0
@@ -60,8 +60,8 @@ class myLivePlot(LivePlotWindow):
         I = IQ['value_0']
         Q = IQ['value_1']
         S = I + 1j*Q
-        self.spectrum.set_xdata(S.real)
-        self.spectrum.set_ydata(S.imag)
+        self.IQplot.set_xdata(S.real)
+        self.IQplot.set_ydata(S.imag)
         # Autoscale axis
         rmax = np.max(np.abs(S))*1.1
         if rmax>self.rmax:

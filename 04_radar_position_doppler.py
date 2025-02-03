@@ -10,9 +10,9 @@ import numpy as np
 ###################
 # The QUA program #
 ###################
-f_min = 250 * u.MHz
-df = -10 * u.MHz
-n_points_position = 50
+f_min = 500 * u.MHz
+df = -8 * u.MHz
+n_points_position = 126
 n_points_velocity = 64
 frequencies = f_min + np.arange(n_points_position)*df  
 
@@ -53,7 +53,7 @@ class myLivePlot(LivePlotWindow):
         # Create plot axes
         self.ax = self.canvas.figure.subplots()
         # Plot
-        self.spectrum = self.ax.imshow(np.ones((n_points_velocity,n_points_position//2)))
+        self.spectrum = self.ax.imshow(np.ones((n_points_velocity,n_points_position)))
         self.canvas.figure.colorbar(self.spectrum, ax=self.ax)
         self.newplot=True        
         
@@ -65,15 +65,12 @@ class myLivePlot(LivePlotWindow):
             return        
         I = IQ['value_0']
         Q = IQ['value_1']
-        self.R = I+1j*Q
-        #M = 20*np.log10(np.abs(np.fft.fft2(self.R)))
-        phase_correc = np.polyval([1.6877255, 3.5768221], np.arange(n_points_position))
-        self.R *= np.exp(-1j*phase_correc)
-        M = np.abs(np.fft.fft2(self.R))
+        S = I + 1j*Q
+        S = S * np.exp(-1j*self.delay*2*np.pi*frequencies)
+        M = np.abs(np.fft.fft2(S))
         M[0,0] = np.nan
         M = np.fft.fftshift(M)
-        self.M = M
-        self.spectrum.set_data(M[:,n_points_position//2:])
+        self.spectrum.set_data(M)
         if self.newplot:
             cmin = np.nanmin(M)
             cmax = np.nanmax(M)

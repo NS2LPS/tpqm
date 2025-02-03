@@ -1,5 +1,5 @@
 from qm.qua import *
-from configuration_radar import qm, pulse_len
+from configuration_radar import qm, pulse_len, time_of_flight
 from live_plot import LivePlotWindow
 
 from qualang_tools.loops import from_array
@@ -10,9 +10,10 @@ import numpy as np
 ###################
 # The QUA program #
 ###################
-f_min = 350 * u.MHz
-df = -5 * u.MHz
-n_points_position = 128
+f_min = 500 * u.MHz
+df = -8 * u.MHz
+n_points_position = 126
+n_zero_padding = 124
 frequencies = f_min + np.arange(n_points_position)*df  
 
 with program() as prog:
@@ -30,7 +31,7 @@ with program() as prog:
             # Update the frequency of the digital oscillator linked to the resonator element
             update_frequency("radar", f)
             measure(
-                "readout",
+                "pulse",
                 "radar",
                 None,
                 dual_demod.full("cos", "sin", I),
@@ -52,8 +53,10 @@ class myLivePlot(LivePlotWindow):
         # Create plot axes
         self.ax = self.canvas.figure.subplots(2,1)
         # Plot
-        self.spectrum = self.ax[0].plot(np.ones(n_points_position+128))[0]
+        self.xaxis = np.fft.fftshift(np.fft.fftfreq(n_points_position+n_zero_padding, d=-df))*3e8/2
+        self.fftplot = self.ax[0].plot(self.xaxis, np.ones(n_points_position+n_zero_padding))[0]
         self.positions = []
+        self.delay = 0.0
 
         
     def polldata(self):
@@ -63,16 +66,13 @@ class myLivePlot(LivePlotWindow):
             return        
         I = IQ['value_0']
         Q = IQ['value_1']
-        self.R = I+1j*Q
-        phase_correc = np.exp(-1j*pulse_len*1e-9*frequencies)
-        Rcorrec = self.R*phase_correc
-        M = np.abs(np.fft.fft(np.r_[Rcorrec,np.zeros(128)]))
-        M[0] = np.nan
-        M[-1] = np.nan
+        S = I + 1j*Q
+        S = S * np.exp(-1j*self.delay*2*np.pi*frequencies)
+        M = np.abs(np.fft.fft(np.r_[S, np.zeros(n_zero_padding)]))
         M = np.fft.fftshift(M)
-        self.positions.append(np.nanargmax(M))
-        self.spectrum.set_ydata(M)        
-        self.ax[0].set_ylim(0, np.nanmax(M))
+        self.positions.append(self.xaxis[np.argmax(M)])
+        self.fftplot.set_ydata(M)        
+        self.ax[0].set_ylim(0, np.max(M))
         self.ax[1].cla()
         self.ax[1].plot(self.positions)
         self.canvas.draw()

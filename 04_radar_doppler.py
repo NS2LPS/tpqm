@@ -1,5 +1,5 @@
 from qm.qua import *
-from configuration_radar import qm, pulse_len
+from configuration_radar import qm, pulse_len, radar_LO
 from live_plot import LivePlotWindow
 
 from qualang_tools.loops import from_array
@@ -10,10 +10,7 @@ import numpy as np
 ###################
 # The QUA program #
 ###################
-f_min = 350 * u.MHz
-df = -5 * u.MHz
-n_points_position = 128
-frequencies = f_min + np.arange(n_points_position)*df  
+n_points_velocity = 128
 
 with program() as prog:
     n = declare(int)  # QUA variable for the averaging loop
@@ -26,23 +23,21 @@ with program() as prog:
     
 
     with infinite_loop_():
-        with for_(*from_array(f, frequencies)):  # QUA for_ loop for sweeping the frequency
-            # Update the frequency of the digital oscillator linked to the resonator element
-            update_frequency("radar", f)
-            measure(
-                "readout",
-                "radar",
-                None,
-                dual_demod.full("cos", "sin", I),
-                dual_demod.full("minus_sin", "cos", Q),
-            )
-            # Save the 'I' & 'Q' quadratures to their respective streams
-            save(I, I_st)
-            save(Q, Q_st)
+        measure(
+            "readout",
+            "radar",
+            None,
+            dual_demod.full("cos", "sin", I),
+            dual_demod.full("minus_sin", "cos", Q),
+        )
+        wait(1*u.ms - pulse_len*u.ns)
+        # Save the 'I' & 'Q' quadratures to their respective streams
+        save(I, I_st)
+        save(Q, Q_st)
 
     with stream_processing():
         # Cast the data into a 1D vector and store the results on the OPX processor
-        I_st.buffer(n_points_position).zip(Q_st.buffer(n_points_position)).save("IQ")
+        I_st.buffer(n_points_velocity).zip(Q_st.buffer(n_points_velocity)).save("IQ")
 
 ####################
 # Live plot        #
@@ -52,8 +47,9 @@ class myLivePlot(LivePlotWindow):
         # Create plot axes
         self.ax = self.canvas.figure.subplots(2,1)
         # Plot
-        self.spectrum = self.ax[0].plot(np.ones(n_points_position+128))[0]
-        self.positions = []
+        self.xaxis = np.fft.fftshift(np.fft.fftfreq(n_points_velocity, d=1e-3))*3e8/2/radar_LO
+        self.fftplot = self.ax[0].plot(self.xaxis, np.ones(n_points_velocity))[0]
+        self.velocities = []
 
         
     def polldata(self):
@@ -63,18 +59,16 @@ class myLivePlot(LivePlotWindow):
             return        
         I = IQ['value_0']
         Q = IQ['value_1']
-        self.R = I+1j*Q
-        phase_correc = np.exp(-1j*pulse_len*1e-9*frequencies)
-        Rcorrec = self.R*phase_correc
-        M = np.abs(np.fft.fft(np.r_[Rcorrec,np.zeros(128)]))
+        S = I+1j*Q
+        M = np.abs(np.fft.fft(S))
         M[0] = np.nan
-        M[-1] = np.nan
+        #M[-1] = np.nan
         M = np.fft.fftshift(M)
-        self.positions.append(np.nanargmax(M))
-        self.spectrum.set_ydata(M)        
+        self.velocities.append(self.xaxis[np.nanargmax(M)])
+        self.fftplot.set_ydata(M)        
         self.ax[0].set_ylim(0, np.nanmax(M))
         self.ax[1].cla()
-        self.ax[1].plot(self.positions)
+        self.ax[1].plot(self.velocities)
         self.canvas.draw()
         
         

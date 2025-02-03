@@ -10,8 +10,11 @@ import numpy as np
 ###################
 # The QUA program #
 ###################
-frequencies = np.array([-150,-50,50,150]) * u.MHz
-n_points = len(frequencies)
+f_min = 500 * u.MHz
+df = -8 * u.MHz
+n_points = 126
+frequencies = f_min + np.arange(n_points)*df  
+
 
 with program() as prog:
     f = declare(int)  # QUA variable for the readout frequency
@@ -49,10 +52,11 @@ class myLivePlot(LivePlotWindow):
         # Create plot axes
         self.ax = self.canvas.figure.subplots()
         # Plot
-        self.spectrum = self.ax.scatter(np.ones(n_points),np.ones(n_points),s=10,c=['C0','C1','C2','C3'])
+        self.IQplot = self.ax.plot(np.ones(n_points), np.ones(n_points),'.')[0]
         self.ax.set_xlabel('I')
         self.ax.set_ylabel('Q')
         self.rmax = 0.0
+        self.delay = 0.0
         self.ax.set_aspect('equal')
         
     def polldata(self):
@@ -63,10 +67,10 @@ class myLivePlot(LivePlotWindow):
         I = IQ['value_0']
         Q = IQ['value_1']
         S = I + 1j*Q
-        cable_length = 0.0
-        delay = time_of_flight*1e-9 + cable_length/3e8
-        S = S * np.exp(1j*delay*2*np.pi*frequencies)
-        self.spectrum.set_offsets(np.c_[S.real, S.imag])
+        S = S * np.exp(-1j*self.delay*2*np.pi*frequencies)
+        self.S = np.copy(S)
+        self.IQplot.set_xdata(S.real)
+        self.IQplot.set_ydata(S.imag)
         # Autoscale axis
         rmax = np.max(np.abs(S))*1.1
         if rmax>self.rmax:
