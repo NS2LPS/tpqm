@@ -29,7 +29,7 @@ pulse_len = 10 * u.us
 pulse_amp = 0.1
 
 # Time of flight
-time_of_flight = 216
+time_of_flight = 24
 
 
 #############################################

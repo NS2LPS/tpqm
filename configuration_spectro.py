@@ -24,22 +24,18 @@ qop_port = None  # Write the QOP port if version < QOP220
 #############################################
 rf1_LO = 10.2 * u.GHz
 rf1_IF = 50 * u.MHz
+spectro_LO = 10.0 * u.GHz
+spectro_IF = 250 * u.MHz
 
 # Pulse length
 pulse_len = 1.0 * u.us
 pulse_amp = 0.1
 
+# Readout length
+readout_pulse_len = 10 * u.us
+
 # Time of flight
 time_of_flight = 216
-
-#############################################
-#                Spectro                    #
-#############################################
-spectro_LO = 10.0 * u.GHz
-spectro_IF = 250 * u.MHz
-
-# Pulse length
-readout_pulse_len = 10 * u.us
 
 
 #############################################

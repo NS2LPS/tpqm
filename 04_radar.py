@@ -1,5 +1,5 @@
 from qm.qua import *
-from configuration_radar import qm, pulse_len
+from configuration_radar import qm, time_of_flight
 from live_plot import LivePlotWindow
 
 from qualang_tools.loops import from_array
@@ -49,11 +49,10 @@ class myLivePlot(LivePlotWindow):
         # Create plot axes
         self.ax = self.canvas.figure.subplots()
         # Plot
-        self.spectrum = self.ax.scatter(np.ones(n_points),np.ones(n_points),s=100,c=['C0','C1','C2','C3'])
+        self.spectrum = self.ax.scatter(np.ones(n_points),np.ones(n_points),s=10,c=['C0','C1','C2','C3'])
         self.ax.set_xlabel('I')
         self.ax.set_ylabel('Q')
-        self.ax.set_xlim(-0.5,0.5)
-        self.ax.set_ylim(-0.5,0.5)
+        self.rmax = 0.0
         self.ax.set_aspect('equal')
         
     def polldata(self):
@@ -63,7 +62,17 @@ class myLivePlot(LivePlotWindow):
             return        
         I = IQ['value_0']
         Q = IQ['value_1']
-        self.spectrum.set_offsets(np.c_[I,Q])
+        S = I + 1j*Q
+        cable_length = 0.0
+        delay = time_of_flight*1e-9 + cable_length/3e8
+        S = S * np.exp(1j*delay*2*np.pi*frequencies)
+        self.spectrum.set_offsets(np.c_[S.real, S.imag])
+        # Autoscale axis
+        rmax = np.max(np.abs(S))*1.1
+        if rmax>self.rmax:
+            self.rmax = rmax
+            self.ax.set_xlim(-rmax,rmax)
+            self.ax.set_ylim(-rmax,rmax)            
         self.canvas.draw()
         
 

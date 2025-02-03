@@ -49,8 +49,7 @@ class myLivePlot(LivePlotWindow):
         self.spectrum = self.ax.plot(np.ones(n_points),np.ones(n_points),'.')[0]
         self.ax.set_xlabel('I')
         self.ax.set_ylabel('Q')
-        self.ax.set_xlim(-0.5,0.5)
-        self.ax.set_ylim(-0.5,0.5)
+        self.rmax = 0.0
         self.ax.set_aspect('equal')
         
     def polldata(self):
@@ -60,8 +59,15 @@ class myLivePlot(LivePlotWindow):
             return        
         I = IQ['value_0']
         Q = IQ['value_1']
-        self.spectrum.set_xdata(I)
-        self.spectrum.set_ydata(Q)
+        S = I + 1j*Q
+        self.spectrum.set_xdata(S.real)
+        self.spectrum.set_ydata(S.imag)
+        # Autoscale axis
+        rmax = np.max(np.abs(S))*1.1
+        if rmax>self.rmax:
+            self.rmax = rmax
+            self.ax.set_xlim(-rmax,rmax)
+            self.ax.set_ylim(-rmax,rmax)            
         self.canvas.draw()
 
 #######################
