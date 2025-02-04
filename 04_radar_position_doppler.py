@@ -52,14 +52,20 @@ with program() as prog:
 class myLivePlot(LivePlotWindow):
     def create_axes(self):
         # Create plot axes
-        self.ax = self.canvas.figure.subplots()
+        self.ax = self.canvas.figure.subplots(1,2)
         # Plot
         self.xaxis = np.fft.fftshift(np.fft.fftfreq(n_points_position+n_zero_padding, d=-df))*3e8/2
-        self.yaxis = np.fft.fftshift(np.fft.fftfreq(n_points_velocity, d=1e-3))*3e8/2/radar_LO
-        self.spectrum = self.ax.pcolormesh(self.xaxis,self.yaxis,np.ones((n_points_velocity, n_points_position+n_zero_padding)))
-        self.ax.set_xlabel('Position (m)')
-        self.ax.set_ylabel('Velocity (m/s)')
-        self.canvas.figure.colorbar(self.spectrum, ax=self.ax)
+        period = n_points_position*pulse_len*1e-9
+        self.yaxis = np.fft.fftshift(np.fft.fftfreq(n_points_velocity, d=period))*3e8/2/radar_LO
+        self.fftplot = self.ax[0].pcolormesh(self.xaxis,self.yaxis,np.ones((n_points_velocity, n_points_position+n_zero_padding)))
+        self.ax[0].set_xlabel('Position (m)')
+        self.ax[0].set_ylabel('Velocity (m/s)')
+        self.positions=np.zeros(100)*np.nan
+        self.velocities=np.zeros(100)*np.nan
+        self.phaseportraitplot = self.ax[1].plot(self.positions, self.velocities,'.')[0]
+        self.ax[1].set_xlim(-10,10)
+        self.ax[1].set_ylim(-5,5)
+        self.delay = 0.0
         
         
     def polldata(self):
@@ -70,12 +76,20 @@ class myLivePlot(LivePlotWindow):
         I = IQ['value_0']
         Q = IQ['value_1']
         S = I + 1j*Q
+        self.S = S.copy()
         S = S * np.exp(-1j*self.delay*2*np.pi*frequencies)
         M = np.abs(np.fft.fft2(np.c_[S, np.zeros((n_points_velocity,n_zero_padding))]))
         M[0,0] = np.nan
         M = np.fft.fftshift(M)
-        self.spectrum.set_data(M)
-        self.spectrum.set_clim(0,np.nanmax(M))
+        i,j = np.unravel_index(np.nanargmax(M),M.shape)
+        self.positions[0] = self.xaxis[j]
+        self.velocities[0] = self.yaxis[i]
+        self.positions = np.roll(self.positions,1)
+        self.velocities = np.roll(self.velocities,1)
+        self.phaseportraitplot.set_xdata(self.positions)
+        self.phaseportraitplot.set_ydata(self.velocities)        
+        self.fftplot.set_array(M)
+        self.fftplot.set_clim(0,np.nanmax(M))
         self.canvas.draw()
 
 #######################
