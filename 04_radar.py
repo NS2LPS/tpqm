@@ -58,6 +58,7 @@ class myLivePlot(LivePlotWindow):
         self.rmax = 0.0
         self.delay = 0.0
         self.ax.set_aspect('equal')
+        self.canvas.figure.tight_layout()
         
     def polldata(self):
         # Fetch the raw ADC traces

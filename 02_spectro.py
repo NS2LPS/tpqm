@@ -59,6 +59,7 @@ class myLivePlot(LivePlotWindow):
         self.ax.set_xlabel('Frequency (MHz)')
         self.ax.set_ylabel('Signal (dB)')
         self.ax.set_ylim(-120,0)
+        self.canvas.figure.tight_layout()
         
     def polldata(self):
         # Fetch the raw ADC traces

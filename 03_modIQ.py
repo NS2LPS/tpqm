@@ -51,6 +51,7 @@ class myLivePlot(LivePlotWindow):
         self.ax.set_ylabel('Q')
         self.rmax = 0.0
         self.ax.set_aspect('equal')
+        self.canvas.figure.tight_layout()
         
     def polldata(self):
         # Fetch the raw ADC traces
